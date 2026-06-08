@@ -350,6 +350,27 @@ a {
   color: #6ee7b7;
 }
 
+.badge-new {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  animation: pulseNew 2s ease-in-out infinite;
+}
+
+@keyframes pulseNew {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.submission-new {
+  border-color: rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.04);
+}
+
+.submission-new:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.08);
+}
+
 /* ========== FORM ELEMENTS ========== */
 .form-group {
   margin-bottom: 20px;

@@ -203,6 +203,9 @@
       container.innerHTML = '<div class="submissions-list" id="submissionsList"></div>';
       const list = document.getElementById('submissionsList');
 
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+
       filtered.forEach(feed => {
         const date = new Date(feed.created_at).toLocaleDateString('ar-SA', {
           year: 'numeric', month: 'long', day: 'numeric',
@@ -212,16 +215,20 @@
         const badgeClass = feed.type === 1 ? 'badge-complaint' : 'badge-suggestion';
         const badgeIcon = feed.type === 1 ? '⚠️' : '💡';
         const shortId = feed.id ? feed.id.substring(0, 8) + '...' : '';
+        const isNew = now - new Date(feed.created_at).getTime() < oneDay;
 
         const card = document.createElement('div');
-        card.className = 'submission-card';
+        card.className = 'submission-card' + (isNew ? ' submission-new' : '');
         card.innerHTML = `
           <div class="submission-header">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
               <span class="badge ${badgeClass}">${badgeIcon} ${typeLabel}</span>
               <span class="submission-date">📅 ${date}</span>
             </div>
-            <span class="submission-id">🆔 ${shortId}</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              ${isNew ? '<span class="badge badge-new">🆕 جديد</span>' : ''}
+              <span class="submission-id">🆔 ${shortId}</span>
+            </div>
           </div>
           <div class="submission-content">${escapeHtml(feed.content)}</div>
         `;
