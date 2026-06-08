@@ -6,6 +6,14 @@ on:
     - cron: '0 0 * * *'
   workflow_dispatch: # للتشغيل اليدوي عند الحاجة
 
+# منح الأكشن صلاحية تعديل الملفات والـ Push للمستودع
+permissions:
+  contents: write
+
+env:
+  # إجبار الأكشن على استخدام بيئة حديثة ومستقرة لتفادي تحذيرات المنصة
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   ping_and_keep_alive:
     runs-on: ubuntu-latest
@@ -15,12 +23,12 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    # 2. استدعاء قاعدة بيانات سوبابيس (REST API مباشر)
+    # 2. استدعاء دالة قاعدة بيانات سوبابيس (RPC عبر REST API مباشر)
     - name: Call Supabase REST API
       run: |
-        curl -X GET "${{ secrets.SADA_SUPABASE_URL }}/rest/v1/rpc/get_latest_feed \
+        curl -X GET "${{ secrets.SADA_SUPABASE_URL }}/rest/v1/rpc/get_latest_feed" \
         -H "apikey: ${{ secrets.SADA_SUPABASE_ANON_KEY }}" \
-        -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+        -H "Authorization: Bearer ${{ secrets.SADA_SUPABASE_ANON_KEY }}" \
         -H "Content-Type: application/json"
 
     # 3. خدعة منع خمول الأكشن: تحديث ملف بسيط لإبقاء المستودع نشطاً بنظر GitHub
@@ -30,5 +38,9 @@ jobs:
         git config --local user.name "GitHub Action"
         echo "Last ping: $(date)" > keep_alive.txt
         git add keep_alive.txt
-        git diff-index --quiet HEAD || git commit -m "chore: automated keep-alive ping [skip ci]"
-        git push
+        
+        # التحقق من وجود تغييرات فعلياً قبل الـ commit والـ push لتفادي أي exit code خطأ
+        if ! git diff-index --quiet HEAD --; then
+          git commit -m "chore: automated keep-alive ping [skip ci]"
+          git push
+        fi
