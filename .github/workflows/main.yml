@@ -6,22 +6,24 @@ on:
     - cron: '0 0 * * *'
   workflow_dispatch: # للتشغيل اليدوي عند الحاجة
 
-# منح الأكشن صلاحية تعديل الملفات والـ Push للمستودع
+# صلاحيات كاملة للأكشن للكتابة بداخل المستودع
 permissions:
   contents: write
-
-env:
-  # إجبار الأكشن على استخدام بيئة حديثة ومستقرة لتفادي تحذيرات المنصة
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   ping_and_keep_alive:
     runs-on: ubuntu-latest
+    
+    # تمرير متغير البيئة المقترح من جيت هاب لمنع التحذير وإجبار الـ Runner على استخدام Node 24
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-    # 1. عمل Clone للمستودع لكي نتمكن من التعديل عليه بداخل السيرفر
+    # 1. عمل Clone للمستودع مع تمرير التوكن لضمان صلاحية الـ Push لاحقاً
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     # 2. استدعاء دالة قاعدة بيانات سوبابيس (RPC عبر REST API مباشر)
     - name: Call Supabase REST API
@@ -31,7 +33,7 @@ jobs:
         -H "Authorization: Bearer ${{ secrets.SADA_SUPABASE_ANON_KEY }}" \
         -H "Content-Type: application/json"
 
-    # 3. خدعة منع خمول الأكشن: تحديث ملف بسيط لإبقاء المستودع نشطاً بنظر GitHub
+    # 3. تحديث ملف بسيط لإبقاء المستودع نشطاً بنظر GitHub
     - name: Keep GitHub Action Alive (Prevent 60-day shutdown)
       run: |
         git config --local user.email "action@github.com"
@@ -39,8 +41,8 @@ jobs:
         echo "Last ping: $(date)" > keep_alive.txt
         git add keep_alive.txt
         
-        # التحقق من وجود تغييرات فعلياً قبل الـ commit والـ push لتفادي أي exit code خطأ
+        # نتحقق إذا كان هناك تغيير حقيقي لمنع الـ Exit Code 2 في حال تكرار الكوميت بدون سبب
         if ! git diff-index --quiet HEAD --; then
           git commit -m "chore: automated keep-alive ping [skip ci]"
-          git push
+          git push origin HEAD:${{ github.ref_name }}
         fi
