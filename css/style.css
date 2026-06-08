@@ -587,7 +587,63 @@ a {
   border-color: rgba(16, 185, 129, 0.3);
 }
 
-/* Filters */
+/* ========== EXPORT BAR ========== */
+.export-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.export-bar .btn {
+  font-size: 0.88rem;
+  padding: 10px 20px;
+}
+
+.export-bar .btn svg {
+  flex-shrink: 0;
+}
+
+.export-complaint {
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #fca5a5 !important;
+}
+
+.export-complaint:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+}
+
+.export-suggestion {
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #6ee7b7 !important;
+}
+
+.export-suggestion:hover {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.5) !important;
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #reportContainer,
+  #reportContainer * {
+    visibility: visible;
+  }
+  #reportContainer {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #fff;
+  }
+}
+
+/* ========== FILTERS ========== */
 .filters-bar {
   display: flex;
   gap: 12px;
