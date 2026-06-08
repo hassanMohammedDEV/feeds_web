@@ -26,7 +26,7 @@ jobs:
     # 2. استدعاء دالة قاعدة بيانات سوبابيس (RPC عبر REST API مباشر)
     - name: Call Supabase REST API
       run: |
-        curl -X GET "${{ secrets.SADA_SUPABASE_URL }}/rest/v1/rpc/get_latest_feed" \
+        curl -X POST "${{ secrets.SADA_SUPABASE_URL }}/rest/v1/rpc/get_latest_feed" \
         -H "apikey: ${{ secrets.SADA_SUPABASE_ANON_KEY }}" \
         -H "Authorization: Bearer ${{ secrets.SADA_SUPABASE_ANON_KEY }}" \
         -H "Content-Type: application/json"
