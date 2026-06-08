@@ -6,24 +6,22 @@ on:
     - cron: '0 0 * * *'
   workflow_dispatch: # للتشغيل اليدوي عند الحاجة
 
-# صلاحيات كاملة للأكشن للكتابة بداخل المستودع
+# تفعيل البيئة الجديدة إجبارياً على مستوى السيرفر بالكامل
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+# تصريح صريح للأكشن بالكتابة
 permissions:
   contents: write
 
 jobs:
   ping_and_keep_alive:
     runs-on: ubuntu-latest
-    
-    # تمرير متغير البيئة المقترح من جيت هاب لمنع التحذير وإجبار الـ Runner على استخدام Node 24
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-    # 1. عمل Clone للمستودع مع تمرير التوكن لضمان صلاحية الـ Push لاحقاً
+    # 1. عمل Clone للمستودع
     - name: Checkout Repository
       uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
 
     # 2. استدعاء دالة قاعدة بيانات سوبابيس (RPC عبر REST API مباشر)
     - name: Call Supabase REST API
@@ -38,11 +36,13 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        
+        # تحديث الوقت داخل الملف
         echo "Last ping: $(date)" > keep_alive.txt
         git add keep_alive.txt
         
-        # نتحقق إذا كان هناك تغيير حقيقي لمنع الـ Exit Code 2 في حال تكرار الكوميت بدون سبب
+        # عمل الكوميت والرفع فقط في حال وجود تغيير حقيقي لمنع الـ Exit Code 2
         if ! git diff-index --quiet HEAD --; then
           git commit -m "chore: automated keep-alive ping [skip ci]"
-          git push origin HEAD:${{ github.ref_name }}
+          git push origin HEAD
         fi
