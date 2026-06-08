@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام الاقتراحات والشكاوى</title>
+  <meta name="description" content="نظام تقديم الاقتراحات والشكاوى - نستمع إليكم لتحسين خدماتنا" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>" />
+</head>
+<body class="public-page">
+  <div class="animated-bg">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Success Modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal">
+      <div class="modal-icon success">✓</div>
+      <h2>شكراً لك!</h2>
+      <p id="modalMessage">تم استلام مشاركتك بنجاح. سنقوم بمراجعتها في أقرب وقت ممكن.</p>
+      <button class="btn btn-primary" onclick="closeModal()">إرسال مشاركة جديدة</button>
+    </div>
+  </div>
+
+  <!-- Public Content -->
+  <div class="public-header">
+    <img src="logo.png" alt="الشعار" class="logo" />
+    <h1>نستمع إليك</h1>
+    <p>شاركنا باقتراحك أو شكواك لنساعدك بشكل أفضل</p>
+  </div>
+
+  <div class="public-form-container">
+    <div class="glass feedback-card">
+      <div class="type-toggle" id="typeToggle">
+        <button class="type-option complaint" data-type="1" onclick="selectType(1)">
+          <span class="type-icon">⚠️</span>
+          <span>شكوى</span>
+        </button>
+        <button class="type-option suggestion active" data-type="2" onclick="selectType(2)">
+          <span class="type-icon">💡</span>
+          <span>اقتراح</span>
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="content">الرسالة</label>
+        <textarea
+          id="content"
+          class="form-textarea"
+          placeholder="اكتب اقتراحك أو شكواك هنا..."
+          maxlength="1000"
+          oninput="updateCharCount()"
+        ></textarea>
+        <div class="char-count">
+          <span id="charCount">0</span> / 1000
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="submitBtn" onclick="submitFeed()" style="width:100%">
+        إرسال
+      </button>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    let selectedType = 2;
+    let isSubmitting = false;
+
+    function selectType(type) {
+      selectedType = type;
+      document.querySelectorAll('.type-option').forEach(el => {
+        el.classList.remove('active', 'complaint', 'suggestion');
+        if (parseInt(el.dataset.type) === type) {
+          el.classList.add('active');
+          if (type === 1) el.classList.add('complaint');
+          else el.classList.add('suggestion');
+        }
+      });
+    }
+
+    function updateCharCount() {
+      const textarea = document.getElementById('content');
+      const count = document.getElementById('charCount');
+      const val = textarea.value.length;
+      count.textContent = val;
+      count.parentElement.classList.toggle('over', val > 900);
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      const icons = { success: '✓', error: '✕', warning: '!' };
+      toast.innerHTML = `<span class="toast-icon">${icons[type] || '✓'}</span> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-20px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function openModal(message) {
+      document.getElementById('modalMessage').textContent = message;
+      document.getElementById('successModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('successModal').classList.remove('active');
+      document.getElementById('content').value = '';
+      updateCharCount();
+    }
+
+    async function submitFeed() {
+      const content = document.getElementById('content').value.trim();
+      const submitBtn = document.getElementById('submitBtn');
+
+      if (!content) {
+        showToast('يرجى كتابة الرسالة قبل الإرسال', 'error');
+        return;
+      }
+
+      if (isSubmitting) return;
+
+      isSubmitting = true;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
+
+      try {
+        const result = await supabaseRPC('insert_feed', {
+          p_content: content,
+          p_type: selectedType,
+        });
+
+        if (result.code === 200) {
+          openModal('تم استلام مشاركتك بنجاح. شكراً لك على تواصلك معنا، سنقوم بمراجعة رسالتك في أقرب وقت.');
+        } else {
+          showToast(result.message || 'حدث خطأ أثناء الإرسال', 'error');
+        }
+      } catch (err) {
+        showToast('تعذر الاتصال بالخادم. حاول مرة أخرى.', 'error');
+      } finally {
+        isSubmitting = false;
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'إرسال';
+      }
+    }
+  </script>
+</body>
+</html>

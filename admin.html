@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة الإدارة - الاقتراحات والشكاوى</title>
+  <meta name="description" content="لوحة تحكم إدارة الاقتراحات والشكاوى" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>" />
+</head>
+<body>
+  <!-- Auth Gate -->
+  <div class="auth-gate" id="authGate">
+    <div class="glass auth-card">
+      <img src="logo.png" alt="الشعار" class="logo" />
+      <h2>لوحة الإدارة</h2>
+      <p>يرجى إدخال رمز الدخول للوصول إلى لوحة التحكم</p>
+      <input type="password" class="auth-input" id="accessCode" placeholder="••••••" maxlength="20" onkeydown="if(event.key==='Enter')checkAccess()" />
+      <div id="authError" class="auth-error"></div>
+      <button class="btn btn-primary" onclick="checkAccess()" style="width:100%;margin-top:16px">
+        دخول
+      </button>
+    </div>
+  </div>
+
+  <!-- Admin Content -->
+  <div class="admin-page" id="adminContent" style="display:none">
+    <div class="animated-bg">
+      <div class="orb"></div>
+      <div class="orb"></div>
+      <div class="orb"></div>
+    </div>
+
+    <div class="admin-header">
+      <div class="admin-header-inner">
+        <div style="display:flex;align-items:center;gap:12px">
+          <img src="logo.png" alt="الشعار" class="logo" />
+          <span class="admin-header-title">لوحة الإدارة</span>
+        </div>
+        <button class="btn btn-ghost" onclick="logout()">
+          تسجيل خروج
+        </button>
+      </div>
+    </div>
+
+    <main class="admin-main">
+      <!-- Stats -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card total">
+          <div class="stat-icon">📊</div>
+          <div class="stat-number" id="statTotal">0</div>
+          <div class="stat-label">المجموع الكلي</div>
+        </div>
+        <div class="stat-card complaints">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-number" id="statComplaints">0</div>
+          <div class="stat-label">الشكاوى</div>
+        </div>
+        <div class="stat-card suggestions">
+          <div class="stat-icon">💡</div>
+          <div class="stat-number" id="statSuggestions">0</div>
+          <div class="stat-label">الاقتراحات</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-bar" id="filtersBar">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">الكل</button>
+        <button class="filter-btn" data-filter="1" onclick="setFilter('1')">الشكاوى</button>
+        <button class="filter-btn" data-filter="2" onclick="setFilter('2')">الاقتراحات</button>
+      </div>
+
+      <!-- Submissions -->
+      <div id="submissionsContainer">
+        <div class="loading-state" id="loadingState">
+          <div class="spinner spinner-lg" style="margin:0 auto 16px"></div>
+          <p style="color:var(--text-muted)">جاري تحميل البيانات...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    const ADMIN_CODE = 'admin123';
+    let allFeeds = [];
+    let currentFilter = 'all';
+
+    function checkAccess() {
+      const code = document.getElementById('accessCode').value;
+      const errorEl = document.getElementById('authError');
+      if (code === ADMIN_CODE) {
+        document.getElementById('authGate').style.display = 'none';
+        document.getElementById('adminContent').style.display = 'block';
+        loadFeeds();
+      } else {
+        errorEl.textContent = '❌ رمز الدخول غير صحيح';
+        setTimeout(() => errorEl.textContent = '', 3000);
+      }
+    }
+
+    function logout() {
+      document.getElementById('authGate').style.display = 'flex';
+      document.getElementById('adminContent').style.display = 'none';
+      document.getElementById('accessCode').value = '';
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(el => {
+        el.classList.toggle('active', el.dataset.filter === filter);
+      });
+      renderSubmissions();
+    }
+
+    async function loadFeeds() {
+      const container = document.getElementById('submissionsContainer');
+      container.innerHTML = `
+        <div class="loading-state" id="loadingState">
+          <div class="spinner spinner-lg" style="margin:0 auto 16px"></div>
+          <p style="color:var(--text-muted)">جاري تحميل البيانات...</p>
+        </div>
+      `;
+
+      try {
+        const result = await supabaseRPC('get_all_feeds', { p_type: null });
+        if (result.code === 200) {
+          allFeeds = result.data || [];
+          renderStats();
+          renderSubmissions();
+        } else {
+          container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><h3>خطأ في تحميل البيانات</h3><p>${result.message || 'حاول مرة أخرى'}</p></div>`;
+        }
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><h3>تعذر الاتصال بالخادم</h3><p>تحقق من اتصالك بالإنترنت وحاول مرة أخرى</p></div>`;
+      }
+    }
+
+    function renderStats() {
+      const total = allFeeds.length;
+      const complaints = allFeeds.filter(f => f.type === 1).length;
+      const suggestions = allFeeds.filter(f => f.type === 2).length;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statComplaints').textContent = complaints;
+      document.getElementById('statSuggestions').textContent = suggestions;
+    }
+
+    function renderSubmissions() {
+      const container = document.getElementById('submissionsContainer');
+      let filtered = allFeeds;
+      if (currentFilter !== 'all') {
+        filtered = allFeeds.filter(f => f.type === parseInt(currentFilter));
+      }
+
+      if (filtered.length === 0) {
+        const emptyMsg = currentFilter === 'all' ? 'لا توجد أي مشاركات بعد' : (currentFilter === '1' ? 'لا توجد شكاوى' : 'لا توجد اقتراحات');
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>${emptyMsg}</h3>
+            <p>عندما يقوم المستخدمون بإرسال مشاركات، ستظهر هنا</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '<div class="submissions-list" id="submissionsList"></div>';
+      const list = document.getElementById('submissionsList');
+
+      filtered.forEach(feed => {
+        const date = new Date(feed.created_at).toLocaleDateString('ar-SA', {
+          year: 'numeric', month: 'long', day: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+        const typeLabel = feed.type === 1 ? 'شكوى' : 'اقتراح';
+        const badgeClass = feed.type === 1 ? 'badge-complaint' : 'badge-suggestion';
+        const badgeIcon = feed.type === 1 ? '⚠️' : '💡';
+        const shortId = feed.id ? feed.id.substring(0, 8) + '...' : '';
+
+        const card = document.createElement('div');
+        card.className = 'submission-card';
+        card.innerHTML = `
+          <div class="submission-header">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <span class="badge ${badgeClass}">${badgeIcon} ${typeLabel}</span>
+              <span class="submission-date">📅 ${date}</span>
+            </div>
+            <span class="submission-id">🆔 ${shortId}</span>
+          </div>
+          <div class="submission-content">${escapeHtml(feed.content)}</div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
