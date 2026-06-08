@@ -1,0 +1,34 @@
+name: Sada Supabase Keep Alive
+
+on:
+  schedule:
+    # يعمل يومياً الساعة 12 منتصف الليل بتوقيت UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch: # للتشغيل اليدوي عند الحاجة
+
+jobs:
+  ping_and_keep_alive:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. عمل Clone للمستودع لكي نتمكن من التعديل عليه بداخل السيرفر
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # 2. استدعاء قاعدة بيانات سوبابيس (REST API مباشر)
+    - name: Call Supabase REST API
+      run: |
+        curl -X GET "${{ secrets.SADA_SUPABASE_URL }}/rest/v1/rpc/get_latest_feed \
+        -H "apikey: ${{ secrets.SADA_SUPABASE_ANON_KEY }}" \
+        -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+        -H "Content-Type: application/json"
+
+    # 3. خدعة منع خمول الأكشن: تحديث ملف بسيط لإبقاء المستودع نشطاً بنظر GitHub
+    - name: Keep GitHub Action Alive (Prevent 60-day shutdown)
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        echo "Last ping: $(date)" > keep_alive.txt
+        git add keep_alive.txt
+        git diff-index --quiet HEAD || git commit -m "chore: automated keep-alive ping [skip ci]"
+        git push
