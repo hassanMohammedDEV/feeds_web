@@ -67,8 +67,11 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/config.js"></script>
   <script>
+    emailjs.init('b_XC-YSte_hWaHmu2');
+
     let selectedType = 2;
     let isSubmitting = false;
 
@@ -132,6 +135,8 @@
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span class="spinner"></span> جاري الإرسال...';
 
+      let savedOk = false;
+
       try {
         const result = await supabaseRPC('insert_feed', {
           p_content: content,
@@ -139,17 +144,38 @@
         });
 
         if (result.code === 200) {
-          openModal('تم استلام مشاركتك بنجاح. شكراً لك على تواصلك معنا، سنقوم بمراجعة رسالتك في أقرب وقت.');
+          savedOk = true;
         } else {
           showToast(result.message || 'حدث خطأ أثناء الإرسال', 'error');
         }
       } catch (err) {
         showToast('تعذر الاتصال بالخادم. حاول مرة أخرى.', 'error');
-      } finally {
-        isSubmitting = false;
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'إرسال';
       }
+
+      if (savedOk) {
+        try {
+          const settings = await supabaseRPC('get_settings');
+          const toEmail = (settings.code === 200 && settings.data) ? settings.data.notification_email : '7assanDev@gmail.com';
+
+          await emailjs.send('service_m08vlyy', 'template_6e81qud', {
+            to_email: toEmail,
+            name: 'مستخدم',
+            time: new Date().toLocaleDateString('ar-SA', {
+              year: 'numeric', month: 'long', day: 'numeric',
+              hour: '2-digit', minute: '2-digit'
+            }),
+            message: content,
+          });
+        } catch (e) {
+          console.log('Email send failed:', e);
+        }
+
+        openModal('تم استلام مشاركتك بنجاح. شكراً لك على تواصلك معنا، سنقوم بمراجعة رسالتك في أقرب وقت.');
+      }
+
+      isSubmitting = false;
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'إرسال';
     }
   </script>
 </body>

@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pitch Deck - نظام الاقتراحات والشكاوى</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Cairo', 'Segoe UI', sans-serif;
+      direction: rtl;
+      background: #0f0f1a;
+      color: #fff;
+    }
+
+    .slide {
+      width: 297mm;
+      height: 210mm;
+      padding: 30px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+    }
+
+    .slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 80% 20%, rgba(245, 158, 11, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 80%, rgba(249, 115, 22, 0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* Slide 1 - Cover */
+    .slide-cover {
+      background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f0f1a 100%);
+      text-align: center;
+      align-items: center;
+    }
+
+    .slide-cover .logo {
+      max-width: 300px;
+      margin-bottom: 30px;
+    }
+
+    .slide-cover h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+
+    .slide-cover .subtitle {
+      font-size: 1.3rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .slide-cover .tagline {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 24px;
+    }
+
+    .slide-cover .date {
+      position: absolute;
+      bottom: 30px;
+      left: 40px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Slide inner */
+    .slide-inner {
+      max-width: 90%;
+    }
+
+    .slide-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .slide-header .num {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .slide-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide-body p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 16px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      margin-top: 16px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+      transition: none;
+    }
+
+    .card .icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card p, .card li {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.65);
+      line-height: 1.7;
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .card ul li {
+      padding: 4px 0;
+      position: relative;
+      padding-right: 20px;
+    }
+
+    .card ul li::before {
+      content: '•';
+      position: absolute;
+      right: 0;
+      color: #f59e0b;
+      font-weight: bold;
+    }
+
+    .highlight {
+      color: #f59e0b;
+      font-weight: 600;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 24px;
+      margin: 20px 0;
+      justify-content: center;
+    }
+
+    .stat-box {
+      text-align: center;
+      padding: 20px 32px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stat-box .num {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f59e0b, #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-box .lbl {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 4px;
+    }
+
+    .footer-note {
+      position: absolute;
+      bottom: 24px;
+      left: 40px;
+      right: 40px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 16px;
+    }
+
+    @media print {
+      body { background: #0f0f1a; }
+      .slide { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .slide-cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .stat-box .num { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .slide-header .num { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .card { -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== SLIDE 1: COVER ===== -->
+  <div class="slide slide-cover">
+    <img src="logo.png" alt="الشعار" class="logo" />
+    <h1>نظام الاقتراحات والشكاوى</h1>
+    <div class="subtitle">Feedback Management Platform</div>
+    <div class="tagline">منصة ذكية لإدارة وتتبع ملاحظات العملاء والمستفيدين</div>
+    <div class="date">2026</div>
+  </div>
+
+  <!-- ===== SLIDE 2: PROBLEM ===== -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="num">١</span>
+        <h2>المشكلة</h2>
+      </div>
+      <div class="slide-body">
+        <p>في العديد من المؤسسات، يتم فقدان أو إهمال ملاحظات العملاء والمستفيدين بسبب غياب نظام مركزي لتلقي وتصنيف وتتبع هذه الملاحظات.</p>
+        <div class="grid-2">
+          <div class="card">
+            <div class="icon">📋</div>
+            <h3>تشتت القنوات</h3>
+            <p>الملاحظات تصل عبر قنوات متفرقة (هاتف، واتساب، إيميل، وسائل تواصل اجتماعي) مما يجعل تتبعها شبه مستحيل.</p>
+          </div>
+          <div class="card">
+            <div class="icon">📉</div>
+            <h3>فقدان البيانات</h3>
+            <p>غياب أرشفة منهجية يؤدي إلى فقدان ملاحظات قيمة كان يمكن استخدامها لتحسين الخدمات والمنتجات.</p>
+          </div>
+          <div class="card">
+            <div class="icon">⏱️</div>
+            <h3>بطء الاستجابة</h3>
+            <p>عدم وجود نظام تصنيف وأولوية يؤدي إلى تأخير معالجة الملاحظات الهامة وتراكمها دون متابعة.</p>
+          </div>
+          <div class="card">
+            <div class="icon">📊</div>
+            <h3>غياب التحليلات</h3>
+            <p>عدم القدرة على استخراج تقارير وإحصائيات دقيقة عن طبيعة الملاحظات وتوزيعها لتوجيه القرارات الإدارية.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note">نظام الاقتراحات والشكاوى © 2026</div>
+  </div>
+
+  <!-- ===== SLIDE 3: SOLUTION ===== -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="num">٢</span>
+        <h2>الحل</h2>
+      </div>
+      <div class="slide-body">
+        <p>منصة إلكترونية متكاملة تتيح للجمهور تقديم الاقتراحات والشكاوى بسهولة، مع لوحة تحكم متقدمة للإدارة.</p>
+        <div class="grid-2">
+          <div class="card">
+            <div class="icon">🌐</div>
+            <h3>واجهة الجمهور</h3>
+            <ul>
+              <li>تقديم شكوى أو اقتراح بخطوات بسيطة</li>
+              <li>تصنيف تلقائي للمشاركات</li>
+              <li>رسالة تأكيد وشكر بعد الإرسال</li>
+              <li>تصميم متجاوب لجميع الأجهزة</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="icon">⚙️</div>
+            <h3>لوحة الإدارة</h3>
+            <ul>
+              <li>عرض جميع المشاركات في واجهة واحدة</li>
+              <li>تصفية حسب النوع (شكوى / اقتراح)</li>
+              <li>إحصائيات مباشرة</li>
+              <li>تصدير PDF وطباعة التقارير</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note">نظام الاقتراحات والشكاوى © 2026</div>
+  </div>
+
+  <!-- ===== SLIDE 4: FEATURES ===== -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="num">٣</span>
+        <h2>المميزات التقنية</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="card">
+            <div class="icon">⚡</div>
+            <h3>Supabase Backend</h3>
+            <ul>
+              <li>قاعدة بيانات PostgreSQL سحابية</li>
+              <li>واجهات API آمنة عبر RPC functions</li>
+              <li>نظام حماية RLS على مستوى الصفوف</li>
+              <li>جاهز للتوسع الأفقي</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="icon">🎨</div>
+            <h3>واجهات عصرية</h3>
+            <ul>
+              <li>تصميم Glassmorphism مع خلفية متحركة</li>
+              <li>هوية لونية دافئة واحترافية</li>
+              <li>دعم كامل للغة العربية</li>
+              <li>متجاوب مع جميع الشاشات</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="icon">🔒</div>
+            <h3>أمان وخصوصية</h3>
+            <ul>
+              <li>لوحة إدارة محمية برمز دخول</li>
+              <li>جلسة عمل محفوظة في المتصفح</li>
+              <li>بيانات مشفرة أثناء النقل</li>
+              <li>صلاحيات مقيدة للقراءة المباشرة</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="icon">📄</div>
+            <h3>تقارير احترافية</h3>
+            <ul>
+              <li>تصدير PDF بنقرة واحدة</li>
+              <li>تقارير إحصائية مع جداول مرتبة</li>
+              <li>طباعة مباشرة للتقارير</li>
+              <li>تصفية حسب النوع عند التصدير</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="icon">📱</div>
+            <h3>تجربة مستخدم</h3>
+            <ul>
+              <li>واجهة بديهية وسهلة الاستخدام</li>
+              <li>رسائل ترحيب وتأكيد</li>
+              <li>إشعارات فورية</li>
+              <li>أداء سريع وسلس</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="icon">🔍</div>
+            <h3>توسع مستقبلي</h3>
+            <ul>
+              <li>إمكانية إضافة ردود إدارة</li>
+              <li>إشعارات عبر البريد الإلكتروني</li>
+              <li>لوحة تحليلات متقدمة</li>
+              <li>تطبيق جوال مستقبلاً</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note">نظام الاقتراحات والشكاوى © 2026</div>
+  </div>
+
+  <!-- ===== SLIDE 5: TECH STACK ===== -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="num">٤</span>
+        <h2>التقنيات المستخدمة</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="card" style="text-align:center">
+            <div style="font-size:3rem;margin-bottom:12px;font-weight:800;background:linear-gradient(135deg,#3ecf8e,#2d9d6e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">S</div>
+            <h3>Supabase</h3>
+            <p>منصة backend مفتوحة المصدر تعتمد على PostgreSQL، توفر API آمن و Real-time capabilities.</p>
+          </div>
+          <div class="card" style="text-align:center">
+            <div style="font-size:3rem;margin-bottom:12px;font-weight:800;background:linear-gradient(135deg,#f59e0b,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">H</div>
+            <h3>HTML + CSS + JS</h3>
+            <p>تطبيق ويب تفاعلي بتقنيات الويب الأساسية، بدون أي إطار عمل خارجي لسهولة الصيانة.</p>
+          </div>
+          <div class="card" style="text-align:center">
+            <div style="font-size:3rem;margin-bottom:12px;font-weight:800;background:linear-gradient(135deg,#6366f1,#4338ca);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">P</div>
+            <h3>jsPDF</h3>
+            <p>مكتبة لإنشاء ملفات PDF احترافية قابلة للطباعة والتصدير.</p>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="num">صفر</div>
+            <div class="lbl">اعتماد على إطارات عمل</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">ثوانٍ</div>
+            <div class="lbl">زمن التحميل الأولي</div>
+          </div>
+          <div class="stat-box">
+            <div class="num">١٠٠٪</div>
+            <div class="lbl">متجاوب مع الأجهزة</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note">نظام الاقتراحات والشكاوى © 2026</div>
+  </div>
+
+  <!-- ===== SLIDE 6: BENEFITS ===== -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="slide-header">
+        <span class="num">٥</span>
+        <h2>العوائد والفوائد</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="card">
+            <div class="icon">📈</div>
+            <h3>تحسين الخدمات</h3>
+            <p>تحليل مباشر لملاحظات العملاء يكشف نقاط الضعف ويساعد في تحسين جودة الخدمات والمنتجات بشكل مستمر.</p>
+          </div>
+          <div class="card">
+            <div class="icon">❤️</div>
+            <h3>رضا العملاء</h3>
+            <p>عندما يشعر العميل بأن صوته مسموع، يزداد ولاؤه وثقته بالمؤسسة، مما ينعكس إيجاباً على السمعة.</p>
+          </div>
+          <div class="card">
+            <div class="icon">⏰</div>
+            <h3>توفير الوقت والجهد</h3>
+            <p>أتمتة عملية استقبال وتصنيف الملاحظات يوفر ساعات عمل ثمينة يمكن توجيهها للتطوير والابتكار.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🎯</div>
+            <h3>قرارات مبنية على بيانات</h3>
+            <p>تقارير إحصائية دقيقة تساعد الإدارة في اتخاذ قرارات استراتيجية مبنية على معلومات حقيقية وليس تخميناً.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-note">نظام الاقتراحات والشكاوى © 2026</div>
+  </div>
+
+  <!-- ===== SLIDE 7: CONTACT ===== -->
+  <div class="slide slide-cover" style="background:linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 50%,#0f0f1a 100%)">
+    <div style="position:relative;z-index:1">
+      <h1 style="font-size:2.8rem">لنعمل معاً</h1>
+      <div class="subtitle" style="margin-bottom:32px">نحن مستعدون لتطوير الحل ليلبي احتياجات مؤسستك</div>
+      <div class="grid-3" style="max-width:600px;margin:0 auto;text-align:center">
+        <div class="card" style="text-align:center">
+          <div style="font-size:2rem;margin-bottom:8px">📞</div>
+          <p style="font-size:0.9rem;color:rgba(255,255,255,0.6)">للتواصل والاستفسار</p>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:2rem;margin-bottom:8px">🛠️</div>
+          <p style="font-size:0.9rem;color:rgba(255,255,255,0.6)">تخصيص حسب الاحتياج</p>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:2rem;margin-bottom:8px">🚀</div>
+          <p style="font-size:0.9rem;color:rgba(255,255,255,0.6)">دعم فني وتطوير مستمر</p>
+        </div>
+      </div>
+    </div>
+    <div class="date">© 2026 - جميع الحقوق محفوظة</div>
+  </div>
+
+</body>
+</html>

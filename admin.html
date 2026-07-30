@@ -38,9 +38,14 @@
           <img src="logo.png" alt="الشعار" class="logo" />
           <span class="admin-header-title">لوحة الإدارة</span>
         </div>
-        <button class="btn btn-ghost" onclick="logout()">
-          تسجيل خروج
-        </button>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="btn btn-ghost" onclick="openSettings()">
+            ⚙️ الإعدادات
+          </button>
+          <button class="btn btn-ghost" onclick="logout()">
+            تسجيل خروج
+          </button>
+        </div>
       </div>
     </div>
 
@@ -99,6 +104,35 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal" style="text-align:right;max-width:520px">
+      <h2 style="margin-bottom:20px">⚙️ الإعدادات</h2>
+
+      <div class="form-group">
+        <label class="form-label">البريد الإلكتروني للإشعارات</label>
+        <input type="email" class="auth-input" id="settingEmail" placeholder="admin@example.com" style="text-align:right;direction:rtl" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">حالة الإشعارات</label>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
+          <button class="toggle-btn" id="toggleNotif" onclick="toggleNotifications()">
+            <span class="toggle-slider"></span>
+          </button>
+          <span id="toggleLabel" style="font-size:0.9rem;color:var(--text-secondary)">مفعلة</span>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px">
+        <button class="btn btn-primary" onclick="saveSettings()" style="flex:1">💾 حفظ</button>
+        <button class="btn btn-secondary" onclick="closeSettings()">إلغاء</button>
+      </div>
+
+      <div id="settingsStatus" style="margin-top:12px;font-size:0.9rem;text-align:center"></div>
+    </div>
   </div>
 
   <!-- Hidden Report Container for PDF/Print -->
@@ -385,6 +419,58 @@
         container.style.display = 'none';
         container.innerHTML = '';
       }, 300);
+    }
+
+    // ==================== SETTINGS ====================
+
+    let settingsData = {};
+
+    function openSettings() {
+      loadSettings();
+      document.getElementById('settingsModal').classList.add('active');
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsModal').classList.remove('active');
+      document.getElementById('settingsStatus').textContent = '';
+    }
+
+    async function loadSettings() {
+      const result = await supabaseRPC('get_settings');
+      if (result.code === 200) {
+        settingsData = result.data || {};
+        document.getElementById('settingEmail').value = settingsData.notification_email || '';
+        const enabled = settingsData.notifications_enabled !== 'false';
+        document.getElementById('toggleNotif').classList.toggle('active', enabled);
+        document.getElementById('toggleLabel').textContent = enabled ? 'مفعلة' : 'متوقفة';
+      }
+    }
+
+    function toggleNotifications() {
+      const btn = document.getElementById('toggleNotif');
+      btn.classList.toggle('active');
+      const enabled = btn.classList.contains('active');
+      document.getElementById('toggleLabel').textContent = enabled ? 'مفعلة' : 'متوقفة';
+    }
+
+    async function saveSettings() {
+      const email = document.getElementById('settingEmail').value.trim();
+      const enabled = document.getElementById('toggleNotif').classList.contains('active');
+      const status = document.getElementById('settingsStatus');
+      status.textContent = '⏳ جاري الحفظ...';
+
+      // Save both settings
+      const r1 = await supabaseRPC('update_setting', { p_key: 'notification_email', p_value: email });
+      const r2 = await supabaseRPC('update_setting', { p_key: 'notifications_enabled', p_value: enabled ? 'true' : 'false' });
+
+      if (r1.code === 200 && r2.code === 200) {
+        status.textContent = '✅ تم حفظ الإعدادات بنجاح';
+        settingsData.notification_email = email;
+        settingsData.notifications_enabled = enabled ? 'true' : 'false';
+        setTimeout(() => { status.textContent = ''; closeSettings(); }, 1500);
+      } else {
+        status.textContent = '❌ فشل في حفظ الإعدادات';
+      }
     }
   </script>
 </body>

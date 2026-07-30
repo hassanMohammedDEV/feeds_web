@@ -1,0 +1,5 @@
+# Contains API keys - never commit
+sql/02_email_notifications.sql
+
+# OS
+.DS_Store
