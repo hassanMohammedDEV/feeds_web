@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة الإدارة - الاقتراحات والشكاوى</title>
-  <meta name="description" content="لوحة تحكم إدارة الاقتراحات والشكاوى" />
+  <title>لوحة الإدارة - الاقتراحات والملاحظات</title>
+  <meta name="description" content="لوحة تحكم إدارة الاقتراحات والملاحظات" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>" />
 
@@ -13,7 +13,9 @@
   <!-- Auth Gate -->
   <div class="auth-gate" id="authGate">
     <div class="glass auth-card">
-      <img src="logo.png" alt="الشعار" class="logo" />
+      <div class="logo-box" style="margin:0 auto 24px;max-width:200px;width:100%">
+        <img src="logo.png" alt="الشعار" class="logo" />
+      </div>
       <h2>لوحة الإدارة</h2>
       <p>يرجى إدخال رمز الدخول للوصول إلى لوحة التحكم</p>
       <input type="password" class="auth-input" id="accessCode" placeholder="••••••" maxlength="20" onkeydown="if(event.key==='Enter')checkAccess()" />
@@ -35,7 +37,9 @@
     <div class="admin-header">
       <div class="admin-header-inner">
         <div style="display:flex;align-items:center;gap:12px">
-          <img src="logo.png" alt="الشعار" class="logo" />
+          <div class="logo-box logo-box-sm">
+            <img src="logo.png" alt="الشعار" class="logo" />
+          </div>
           <span class="admin-header-title">لوحة الإدارة</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
@@ -60,7 +64,7 @@
         <div class="stat-card complaints">
           <div class="stat-icon">⚠️</div>
           <div class="stat-number" id="statComplaints">0</div>
-          <div class="stat-label">الشكاوى</div>
+          <div class="stat-label">الملاحظات</div>
         </div>
         <div class="stat-card suggestions">
           <div class="stat-icon">💡</div>
@@ -77,7 +81,7 @@
         </button>
         <button class="btn btn-secondary export-complaint" onclick="exportPDF(1)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          PDF الشكاوى
+          PDF الملاحظات
         </button>
         <button class="btn btn-secondary export-suggestion" onclick="exportPDF(2)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -92,8 +96,21 @@
       <!-- Filters -->
       <div class="filters-bar" id="filtersBar">
         <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">الكل</button>
-        <button class="filter-btn" data-filter="1" onclick="setFilter('1')">الشكاوى</button>
+        <button class="filter-btn" data-filter="1" onclick="setFilter('1')">الملاحظات</button>
         <button class="filter-btn" data-filter="2" onclick="setFilter('2')">الاقتراحات</button>
+      </div>
+
+      <!-- Date Filter -->
+      <div class="date-filter-bar">
+        <div class="date-field">
+          <label for="filterFrom">من تاريخ</label>
+          <input type="date" id="filterFrom" onchange="applyDateFilter()" />
+        </div>
+        <div class="date-field">
+          <label for="filterTo">إلى تاريخ</label>
+          <input type="date" id="filterTo" onchange="applyDateFilter()" />
+        </div>
+        <button class="filter-btn date-clear" onclick="clearDateFilter()">✕ مسح الفلترة</button>
       </div>
 
       <!-- Submissions -->
@@ -176,9 +193,46 @@
 
     function setFilter(filter) {
       currentFilter = filter;
-      document.querySelectorAll('.filter-btn').forEach(el => {
+      document.querySelectorAll('.filter-btn[data-filter]').forEach(el => {
         el.classList.toggle('active', el.dataset.filter === filter);
       });
+      renderSubmissions();
+    }
+
+    function getDateFilter() {
+      const from = document.getElementById('filterFrom').value;
+      const to = document.getElementById('filterTo').value;
+      return {
+        from: from ? new Date(from).getTime() : null,
+        to: to ? new Date(to + 'T23:59:59').getTime() : null,
+      };
+    }
+
+    function isDateFilterActive() {
+      const d = getDateFilter();
+      return d.from !== null || d.to !== null;
+    }
+
+    function filterFeedsByDate(list) {
+      const d = getDateFilter();
+      if (d.from === null && d.to === null) return list;
+      return list.filter(f => {
+        const t = new Date(f.created_at).getTime();
+        if (d.from !== null && t < d.from) return false;
+        if (d.to !== null && t > d.to) return false;
+        return true;
+      });
+    }
+
+    function applyDateFilter() {
+      renderStats();
+      renderSubmissions();
+    }
+
+    function clearDateFilter() {
+      document.getElementById('filterFrom').value = '';
+      document.getElementById('filterTo').value = '';
+      renderStats();
       renderSubmissions();
     }
 
@@ -206,9 +260,10 @@
     }
 
     function renderStats() {
-      const total = allFeeds.length;
-      const complaints = allFeeds.filter(f => f.type === 1).length;
-      const suggestions = allFeeds.filter(f => f.type === 2).length;
+      const scoped = filterFeedsByDate(allFeeds);
+      const total = scoped.length;
+      const complaints = scoped.filter(f => f.type === 1).length;
+      const suggestions = scoped.filter(f => f.type === 2).length;
 
       document.getElementById('statTotal').textContent = total;
       document.getElementById('statComplaints').textContent = complaints;
@@ -219,11 +274,16 @@
       const container = document.getElementById('submissionsContainer');
       let filtered = allFeeds;
       if (currentFilter !== 'all') {
-        filtered = allFeeds.filter(f => f.type === parseInt(currentFilter));
+        filtered = filtered.filter(f => f.type === parseInt(currentFilter));
       }
+      filtered = filterFeedsByDate(filtered);
 
       if (filtered.length === 0) {
-        const emptyMsg = currentFilter === 'all' ? 'لا توجد أي مشاركات بعد' : (currentFilter === '1' ? 'لا توجد شكاوى' : 'لا توجد اقتراحات');
+        let emptyMsg;
+        if (currentFilter === '1') emptyMsg = 'لا توجد ملاحظات';
+        else if (currentFilter === '2') emptyMsg = 'لا توجد اقتراحات';
+        else if (isDateFilterActive()) emptyMsg = 'لا توجد مشاركات في هذه الفترة';
+        else emptyMsg = 'لا توجد أي مشاركات بعد';
         container.innerHTML = `
           <div class="empty-state">
             <div class="empty-icon">📭</div>
@@ -245,7 +305,7 @@
           year: 'numeric', month: 'long', day: 'numeric',
           hour: '2-digit', minute: '2-digit'
         });
-        const typeLabel = feed.type === 1 ? 'شكوى' : 'اقتراح';
+        const typeLabel = feed.type === 1 ? 'ملاحظة' : 'اقتراح';
         const badgeClass = feed.type === 1 ? 'badge-complaint' : 'badge-suggestion';
         const badgeIcon = feed.type === 1 ? '⚠️' : '💡';
         const shortId = feed.id ? feed.id.substring(0, 8) + '...' : '';
@@ -279,21 +339,21 @@
     // ==================== PDF & PRINT ====================
 
     function getFilteredData(type) {
-      if (type === 'all') return allFeeds;
-      return allFeeds.filter(f => f.type === type);
+      if (type === 'all') return filterFeedsByDate(allFeeds);
+      return filterFeedsByDate(allFeeds).filter(f => f.type === type);
     }
 
     function getReportTitle(type) {
-      if (type === 'all') return 'تقرير الاقتراحات والشكاوى';
-      if (type === 1) return 'تقرير الشكاوى';
+      if (type === 'all') return 'تقرير الاقتراحات والملاحظات';
+      if (type === 1) return 'تقرير الملاحظات';
       if (type === 2) return 'تقرير الاقتراحات';
       return '';
     }
 
     function getReportFileName(type) {
       const date = new Date().toISOString().slice(0, 10);
-      if (type === 'all') return `تقرير_الاقتراحات_والشكاوى_${date}`;
-      if (type === 1) return `تقرير_الشكاوى_${date}`;
+      if (type === 'all') return `تقرير_الاقتراحات_والملاحظات_${date}`;
+      if (type === 1) return `تقرير_الملاحظات_${date}`;
       if (type === 2) return `تقرير_الاقتراحات_${date}`;
       return `تقرير_${date}`;
     }
@@ -320,7 +380,7 @@
         rows = '<tr><td colspan="4" style="text-align:center;padding:40px;color:#888">لا توجد بيانات لعرضها</td></tr>';
       } else {
         data.forEach((feed, i) => {
-          const typeTxt = feed.type === 1 ? 'شكوى' : 'اقتراح';
+          const typeTxt = feed.type === 1 ? 'ملاحظة' : 'اقتراح';
           const typeColor = feed.type === 1 ? '#ef4444' : '#10b981';
           const content = escapeHtml(feed.content);
           rows += `
@@ -347,20 +407,20 @@
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { font-family: 'Cairo', 'Segoe UI', sans-serif; direction: rtl; background: #fff; color: #222; }
             .report { max-width: 210mm; margin: 0 auto; padding: 30px 35px; }
-            .report-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; border-bottom: 3px solid #f59e0b; margin-bottom: 24px; }
+            .report-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 20px; border-bottom: 3px solid #d2ae32; margin-bottom: 24px; }
             .report-logo { height: 50px; }
             .report-title-area { text-align: left; }
-            .report-title { font-size: 1.5rem; font-weight: 800; color: #1a1a2e; }
+            .report-title { font-size: 1.5rem; font-weight: 800; color: #26282c; }
             .report-date { font-size: 0.85rem; color: #888; margin-top: 4px; }
             .report-summary { display: flex; gap: 16px; margin-bottom: 28px; }
             .summary-item { flex: 1; padding: 16px 20px; border-radius: 10px; border: 1px solid #e5e7eb; text-align: center; background: #fafafa; }
             .summary-item .num { font-size: 1.8rem; font-weight: 800; line-height: 1.3; }
             .summary-item .lbl { font-size: 0.85rem; color: #666; font-weight: 500; }
-            .summary-item.total .num { color: #f59e0b; }
+            .summary-item.total .num { color: #d2ae32; }
             .summary-item.complaints .num { color: #ef4444; }
             .summary-item.suggestions .num { color: #10b981; }
             table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-            th { background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; padding: 14px 10px; font-weight: 600; font-size: 0.9rem; }
+            th { background: linear-gradient(135deg, #d2ae32, #b89b2a); color: #fff; padding: 14px 10px; font-weight: 600; font-size: 0.9rem; }
             th:first-child { border-radius: 0 8px 8px 0; }
             th:last-child { border-radius: 8px 0 0 8px; }
             tr:nth-child(even) { background: #f9fafb; }
@@ -368,7 +428,7 @@
             @media print {
               body { padding: 0; }
               .report { padding: 20px; }
-              th { background: #f59e0b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+              th { background: #d2ae32 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
               .summary-item { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
               tr:nth-child(even) { background: #f9fafb !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             }
@@ -385,7 +445,7 @@
             </div>
             <div class="report-summary">
               <div class="summary-item total"><div class="num">${data.length}</div><div class="lbl">المجموع الكلي</div></div>
-              <div class="summary-item complaints"><div class="num">${complaints}</div><div class="lbl">الشكاوى</div></div>
+              <div class="summary-item complaints"><div class="num">${complaints}</div><div class="lbl">الملاحظات</div></div>
               <div class="summary-item suggestions"><div class="num">${suggestions}</div><div class="lbl">الاقتراحات</div></div>
             </div>
             <table>

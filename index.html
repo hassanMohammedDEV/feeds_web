@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>نظام الاقتراحات والشكاوى</title>
-  <meta name="description" content="نظام تقديم الاقتراحات والشكاوى - نستمع إليكم لتحسين خدماتنا" />
+  <title>نظام الاقتراحات والملاحظات</title>
+  <meta name="description" content="نظام تقديم الاقتراحات والملاحظات - نستمع إليكم لتحسين خدماتنا" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>" />
 </head>
@@ -27,19 +27,54 @@
     </div>
   </div>
 
-  <!-- Public Content -->
-  <div class="public-header">
-    <img src="logo.png" alt="الشعار" class="logo" />
-    <h1>نستمع إليك</h1>
-    <p>شاركنا باقتراحك أو شكواك لنساعدك بشكل أفضل</p>
-  </div>
+  <!-- ========== HERO ========== -->
+  <section class="hero-section" id="home">
+    <div class="logo-box hero-logo">
+      <img src="logo.png" alt="الشعار" class="logo" />
+    </div>
 
-  <div class="public-form-container">
+    <h1 class="hero-title">نستمع إليك</h1>
+    <p class="hero-subtitle">شاركنا برأيك.. فأنت شريك في تطويرنا ونجاحنا</p>
+
+    <a href="#feedback" class="btn btn-primary hero-cta">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      شاركنا رأيك
+    </a>
+
+    <div class="scroll-indicator">
+      <div class="mouse">
+        <div class="scroller"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ABOUT ========== -->
+  <section class="content-section" id="about">
+    <div class="section-header">
+      <span class="line"></span>
+      <span class="section-title">من نحن</span>
+      <span class="line"></span>
+    </div>
+
+    <div class="glass about-card">
+      <h2>شركة بسمة للتجارة والتطوير العقاري</h2>
+      <p>بسمة للتجارة والتطوير العقاري هي شركة تجارية استثمارية رائدة تُدير وتُشغّل الأملاك والأصول والعقارات الرائدة والأكثر نمواً، وتتركز أعمالها في الوقت الحالي على إدارة الأملاك والعقار وتطويرها.</p>
+    </div>
+  </section>
+
+  <!-- ========== FEEDBACK ========== -->
+  <section class="content-section" id="feedback">
+    <div class="section-header">
+      <span class="line"></span>
+      <span class="section-title">شاركنا رأيك</span>
+      <span class="line"></span>
+    </div>
+
     <div class="glass feedback-card">
       <div class="type-toggle" id="typeToggle">
         <button class="type-option complaint" data-type="1" onclick="selectType(1)">
-          <span class="type-icon">⚠️</span>
-          <span>شكوى</span>
+          <span class="type-icon">💬</span>
+          <span>ملاحظة</span>
         </button>
         <button class="type-option suggestion active" data-type="2" onclick="selectType(2)">
           <span class="type-icon">💡</span>
@@ -52,7 +87,7 @@
         <textarea
           id="content"
           class="form-textarea"
-          placeholder="اكتب اقتراحك أو شكواك هنا..."
+          placeholder="اكتب ملاحظتك أو اقتراحك هنا..."
           maxlength="1000"
           oninput="updateCharCount()"
         ></textarea>
@@ -65,11 +100,39 @@
         إرسال
       </button>
     </div>
-  </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="logo-box logo-box-sm">
+        <img src="logo.png" alt="الشعار" class="logo" />
+      </div>
+      <p>شركة بسمة للتجارة والتطوير العقاري</p>
+
+      <div class="footer-contact">
+        <div class="contact-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>05323131 – 323300 - 733570950</span>
+        </div>
+        <div class="contact-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <a href="mailto:awadh@basma-ye.com">awadh@basma-ye.com</a>
+        </div>
+        <div class="contact-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>الأحد - الخميس: 8:00 ص - 4:00 م</span>
+        </div>
+      </div>
+
+      <span class="footer-copy">جميع الحقوق محفوظة © <span id="year"></span></span>
+    </div>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="js/config.js"></script>
   <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
     emailjs.init('b_XC-YSte_hWaHmu2');
 
     let selectedType = 2;
