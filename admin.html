@@ -325,6 +325,11 @@
             </div>
           </div>
           <div class="submission-content">${escapeHtml(feed.content)}</div>
+          ${feed.name || feed.phone ? `
+          <div class="submission-meta">
+            ${feed.name ? `<span>👤 ${escapeHtml(feed.name)}</span>` : ''}
+            ${feed.phone ? `<span>📱 ${escapeHtml(feed.phone)}</span>` : ''}
+          </div>` : ''}
         `;
         list.appendChild(card);
       });
@@ -377,16 +382,20 @@
 
       let rows = '';
       if (data.length === 0) {
-        rows = '<tr><td colspan="4" style="text-align:center;padding:40px;color:#888">لا توجد بيانات لعرضها</td></tr>';
+        rows = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#888">لا توجد بيانات لعرضها</td></tr>';
       } else {
         data.forEach((feed, i) => {
           const typeTxt = feed.type === 1 ? 'ملاحظة' : 'اقتراح';
           const typeColor = feed.type === 1 ? '#ef4444' : '#10b981';
           const content = escapeHtml(feed.content);
+          const name = escapeHtml(feed.name || '—');
+          const phone = escapeHtml(feed.phone || '—');
           rows += `
             <tr>
               <td style="text-align:center;padding:12px 10px;border-bottom:1px solid #eee;font-weight:600;color:#555">${i + 1}</td>
               <td style="padding:12px 10px;border-bottom:1px solid #eee;color:#333;line-height:1.7">${content}</td>
+              <td style="text-align:center;padding:12px 10px;border-bottom:1px solid #eee;color:#555;font-size:0.85rem;white-space:nowrap">${name}</td>
+              <td style="text-align:center;padding:12px 10px;border-bottom:1px solid #eee;color:#555;font-size:0.85rem;white-space:nowrap">${phone}</td>
               <td style="text-align:center;padding:12px 10px;border-bottom:1px solid #eee">
                 <span style="display:inline-block;padding:4px 14px;border-radius:100px;font-size:0.82rem;font-weight:600;background:${typeColor}15;color:${typeColor}">${typeTxt}</span>
               </td>
@@ -449,7 +458,7 @@
               <div class="summary-item suggestions"><div class="num">${suggestions}</div><div class="lbl">الاقتراحات</div></div>
             </div>
             <table>
-              <thead><tr><th style="width:50px">#</th><th>المحتوى</th><th style="width:100px">النوع</th><th style="width:160px">التاريخ</th></tr></thead>
+              <thead><tr><th style="width:40px">#</th><th>المحتوى</th><th style="width:110px">الاسم</th><th style="width:110px">رقم الجوال</th><th style="width:90px">النوع</th><th style="width:150px">التاريخ</th></tr></thead>
               <tbody>${rows}</tbody>
             </table>
             <div class="report-footer">تم إنشاء هذا التقرير تلقائياً - جميع الحقوق محفوظة © ${now.getFullYear()}</div>
