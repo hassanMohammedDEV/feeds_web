@@ -342,6 +342,20 @@ a {
   transition: var(--transition);
 }
 
+.modal.modal-scroll {
+  max-height: 85vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.modal.modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal.modal-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .modal-overlay.active .modal {
   transform: scale(1);
 }
@@ -1246,6 +1260,54 @@ a {
   color: var(--error);
   font-size: 0.9rem;
   margin-top: 12px;
+}
+
+/* ========== PASSWORD FIELD (eye toggle) ========== */
+.password-field {
+  position: relative;
+  width: 100%;
+}
+
+.password-field .auth-input {
+  padding-left: 46px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.password-toggle:hover {
+  color: var(--text-primary);
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.password-toggle .eye-closed {
+  display: none;
+}
+
+.password-toggle.shown .eye-open {
+  display: none;
+}
+
+.password-toggle.shown .eye-closed {
+  display: block;
 }
 
 /* ========== RESPONSIVE ========== */

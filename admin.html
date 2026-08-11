@@ -18,7 +18,13 @@
       </div>
       <h2>لوحة الإدارة</h2>
       <p>يرجى إدخال رمز الدخول للوصول إلى لوحة التحكم</p>
-      <input type="password" class="auth-input" id="accessCode" placeholder="••••••" maxlength="20" onkeydown="if(event.key==='Enter')checkAccess()" />
+      <div class="password-field">
+        <input type="password" class="auth-input" id="accessCode" placeholder="••••••" maxlength="20" onkeydown="if(event.key==='Enter')checkAccess()" />
+        <button type="button" class="password-toggle" onclick="togglePassword('accessCode', this)" aria-label="إظهار/إخفاء كلمة المرور" tabindex="-1">
+          <svg class="eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
       <div id="authError" class="auth-error"></div>
       <button class="btn btn-primary" onclick="checkAccess()" style="width:100%;margin-top:16px">
         دخول
@@ -125,7 +131,7 @@
 
   <!-- Settings Modal -->
   <div class="modal-overlay" id="settingsModal">
-    <div class="modal" style="text-align:right;max-width:520px">
+    <div class="modal modal-scroll" style="text-align:right;max-width:520px">
       <h2 style="margin-bottom:20px">⚙️ الإعدادات</h2>
 
       <div class="form-group">
@@ -143,6 +149,46 @@
         </div>
       </div>
 
+      <hr style="border:none;border-top:1px solid var(--border-color);margin:24px 0" />
+
+      <h3 style="font-size:1rem;margin-bottom:16px">🔑 تغيير كلمة المرور</h3>
+
+      <div class="form-group">
+        <label class="form-label">كلمة المرور الحالية</label>
+        <div class="password-field">
+          <input type="password" class="auth-input" id="curPassword" placeholder="••••••" style="text-align:right;direction:ltr" autocomplete="current-password" />
+          <button type="button" class="password-toggle" onclick="togglePassword('curPassword', this)" aria-label="إظهار/إخفاء كلمة المرور" tabindex="-1">
+            <svg class="eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">كلمة المرور الجديدة</label>
+        <div class="password-field">
+          <input type="password" class="auth-input" id="newPassword" placeholder="6 أحرف على الأقل" style="text-align:right;direction:ltr" autocomplete="new-password" />
+          <button type="button" class="password-toggle" onclick="togglePassword('newPassword', this)" aria-label="إظهار/إخفاء كلمة المرور" tabindex="-1">
+            <svg class="eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">تأكيد كلمة المرور الجديدة</label>
+        <div class="password-field">
+          <input type="password" class="auth-input" id="confirmPassword" placeholder="••••••" style="text-align:right;direction:ltr" autocomplete="new-password" />
+          <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)" aria-label="إظهار/إخفاء كلمة المرور" tabindex="-1">
+            <svg class="eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary" onclick="changeAdminPassword()" style="width:100%">تغيير كلمة المرور</button>
+      <div id="passwordStatus" style="margin-top:12px;font-size:0.9rem;text-align:center"></div>
+
       <div style="display:flex;gap:12px;margin-top:24px">
         <button class="btn btn-primary" onclick="saveSettings()" style="flex:1">💾 حفظ</button>
         <button class="btn btn-secondary" onclick="closeSettings()">إلغاء</button>
@@ -157,7 +203,7 @@
 
   <script src="js/config.js"></script>
   <script>
-    const ADMIN_CODE = 'admin123';
+    const ADMIN_CODE = null;
     let allFeeds = [];
     let currentFilter = 'all';
 
@@ -175,13 +221,31 @@
     function checkAccess() {
       const code = document.getElementById('accessCode').value;
       const errorEl = document.getElementById('authError');
-      if (code === ADMIN_CODE) {
-        localStorage.setItem('admin_logged_in', 'true');
-        showAdmin();
-      } else {
-        errorEl.textContent = '❌ رمز الدخول غير صحيح';
-        setTimeout(() => errorEl.textContent = '', 3000);
-      }
+
+      if (!code) return;
+
+      supabaseRPC('verify_admin_password', { p_password: code })
+        .then(result => {
+          if (result.code === 200 && result.valid) {
+            localStorage.setItem('admin_logged_in', 'true');
+            showAdmin();
+          } else {
+            errorEl.textContent = '❌ رمز الدخول غير صحيح';
+            setTimeout(() => errorEl.textContent = '', 3000);
+          }
+        })
+        .catch(() => {
+          errorEl.textContent = '❌ تعذر الاتصال بالخادم. حاول مرة أخرى';
+          setTimeout(() => errorEl.textContent = '', 3000);
+        });
+    }
+
+    function togglePassword(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      btn.classList.toggle('shown', show);
+      input.focus();
     }
 
     function logout() {
@@ -502,6 +566,10 @@
     function closeSettings() {
       document.getElementById('settingsModal').classList.remove('active');
       document.getElementById('settingsStatus').textContent = '';
+      document.getElementById('passwordStatus').textContent = '';
+      document.getElementById('curPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
     }
 
     async function loadSettings() {
@@ -540,6 +608,49 @@
       } else {
         status.textContent = '❌ فشل في حفظ الإعدادات';
       }
+    }
+
+    function changeAdminPassword() {
+      const cur = document.getElementById('curPassword').value;
+      const next = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      const status = document.getElementById('passwordStatus');
+
+      if (!cur || !next || !confirm) {
+        status.textContent = '⚠️ يرجى تعبئة جميع الحقول';
+        return;
+      }
+
+      if (next !== confirm) {
+        status.textContent = '❌ كلمة المرور الجديدة غير مطابقة للتأكيد';
+        return;
+      }
+
+      if (next.length < 6) {
+        status.textContent = '❌ كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل';
+        return;
+      }
+
+      status.textContent = '⏳ جاري التغيير...';
+
+      supabaseRPC('update_admin_password', {
+        p_current: cur,
+        p_new: next,
+      })
+        .then(result => {
+          if (result.code === 200) {
+            status.textContent = '✅ تم تغيير كلمة المرور بنجاح';
+            document.getElementById('curPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            setTimeout(() => status.textContent = '', 2500);
+          } else {
+            status.textContent = '❌ ' + (result.message || 'حدث خطأ أثناء تغيير كلمة المرور');
+          }
+        })
+        .catch(() => {
+          status.textContent = '❌ تعذر الاتصال بالخادم. حاول مرة أخرى';
+        });
     }
   </script>
 </body>

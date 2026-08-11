@@ -225,7 +225,9 @@
           p_phone: phone,
         });
 
-        if (result.code !== 200) {
+        // لو كانت الدالة في قاعدة البيانات قديمة ولا تقبل حقلي الاسم والجوال،
+        // (PostgREST يعيد خطأ 42883) أعد المحاولة بدونهما فقط
+        if (typeof result.code === 'string' && result.code === '42883') {
           result = await supabaseRPC('insert_feed', {
             p_content: content,
             p_type: selectedType,
